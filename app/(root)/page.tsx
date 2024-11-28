@@ -1,5 +1,5 @@
 import { auth, signOut } from "@/auth";
-import Image from "next/image";
+import Navbar from "@/components/nav-bar";
 import { redirect } from "next/navigation";
 
 export default async function Home() {
@@ -9,17 +9,5 @@ export default async function Home() {
     redirect("/auth");
   }
 
-  return (
-    <>
-      <h1>ROOT</h1>
-      <form
-        action={async () => {
-          "use server";
-          await signOut();
-        }}
-      >
-        <button type="submit">Sign Out</button>
-      </form>
-    </>
-  );
+  return <></>;
 }

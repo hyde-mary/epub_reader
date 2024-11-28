@@ -1,4 +1,4 @@
-import { auth, signOut } from "@/auth";
+import { auth } from "@/auth";
 import Navbar from "@/components/nav-bar";
 import { redirect } from "next/navigation";
 
@@ -9,5 +9,9 @@ export default async function Home() {
     redirect("/auth");
   }
 
-  return <></>;
+  return (
+    <>
+      <Navbar username={session?.user?.name} image={session?.user?.image} />
+    </>
+  );
 }

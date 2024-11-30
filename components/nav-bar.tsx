@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Image from "next/image";
 import { SignOut } from "@/components/signout-button";
+import { redirect } from "next/navigation";
 
 // so that ts is happy
 type NavbarProps = {
@@ -52,6 +53,7 @@ const Navbar: React.FC<NavbarProps> = ({ username, image }) => {
               variant="outline"
               aria-label="Add new item"
               className="shadow-md border-slate-400"
+              onClick={() => redirect("/upload")}
             >
               <Plus className="h-4 w-4" />
             </Button>

@@ -59,7 +59,7 @@ export default async function Home() {
             <h1 className="xl:text-4xl text-2xl font-extrabold text-slate-950 mb-10">
               {`Your Library: (${books.length})`}
             </h1>
-            <ul className="grid lg:grid-cols-5 md:grid-cols-3 sm:grid-cols-2 gap-5;">
+            <ul className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-5;">
               {books.map((book, index) => (
                 <BookCard key={index} book={book} />
               ))}

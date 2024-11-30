@@ -24,8 +24,8 @@ export default function AuthForm() {
 
         {/* Upload and Title */}
         <div className="relative z-20 flex items-center">
-          <Upload className="mr-5 w-8 h-8" />
-          <p className="text-xl font-bold">Upload Your Books</p>
+          <Upload className="mr-5 w-7 h-7" />
+          <p className="text-xl font-extrabold underline">Upload Your Books</p>
         </div>
 
         {/* Centered Image */}

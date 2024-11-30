@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import { BookCard } from "@/components/book-card";
 import Navbar from "@/components/nav-bar";
 import Image from "next/image";
 import { redirect } from "next/navigation";
@@ -10,15 +11,60 @@ export default async function Home() {
     redirect("/auth");
   }
 
-  const books = [];
+  const books = [
+    {
+      title: "Spirit Chronicles volume 5",
+      author: "Yuri Kitayama",
+      _createdAt: "2024-10-5",
+    },
+    {
+      title: "Spirit Chronicles volume 5",
+      author: "Yuri Kitayama",
+      _createdAt: "2024-10-5",
+    },
+    {
+      title: "Spirit Chronicles volume 5",
+      author: "Yuri Kitayama",
+      _createdAt: "2024-10-5",
+    },
+    {
+      title: "Spirit Chronicles volume 5",
+      author: "Yuri Kitayama",
+      _createdAt: "2024-10-5",
+    },
+    {
+      title: "Spirit Chronicles volume 5",
+      author: "Yuri Kitayama",
+      _createdAt: "2024-10-5",
+    },
+    {
+      title: "Spirit Chronicles volume 5",
+      author: "Yuri Kitayama",
+      _createdAt: "2024-10-5",
+    },
+    {
+      title: "Spirit Chronicles volume 5",
+      author: "Yuri Kitayama",
+      _createdAt: "2024-10-5",
+    },
+  ];
 
   return (
     <>
       <Navbar username={session?.user?.name} image={session?.user?.image} />
       {books.length > 0 ? (
         // if books.length > 0, we display it, else we render something that prompts the user to add something
-        <section className="h-screen flex items-center justify-center">
-          <h1 className="text-3xl">Display Books</h1>
+        <section className="h-screen flex justify-center">
+          <div className="max-w-full mt-28">
+            <h1 className="xl:text-4xl text-2xl font-extrabold text-slate-950 mb-10">
+              {`Your Library: (${books.length})`}
+            </h1>
+            <ul className="grid lg:grid-cols-5 md:grid-cols-3 sm:grid-cols-2 gap-5;">
+              {books.map((book, index) => (
+                <BookCard key={index} book={book} />
+              ))}
+            </ul>
+          </div>
         </section>
       ) : (
         <section className="h-screen flex flex-col items-center justify-center">

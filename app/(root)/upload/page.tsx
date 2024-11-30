@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,13 +16,78 @@ import {
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
+import { bookFormSchema } from "@/lib/validation";
+import { z } from "zod";
+import { useToast } from "@/hooks/use-toast";
 
-export default function AuthForm() {
+export default function Page() {
+  // we first need to validate whether the image is valid before rendering it
   const [imageUrl, setImageUrl] = useState<string>("");
+  const [isValidImage, setIsValidImage] = useState<boolean>(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const { toast } = useToast();
 
   const handleImageUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setImageUrl(event.target.value);
+    const url = event.target.value;
+    setImageUrl(url);
+
+    const validImageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
+    const isValid = validImageExtensions.some((ext) => url.endsWith(ext));
+    setIsValidImage(isValid);
   };
+
+  const handleFormSubmit = async (previousState: any, formData: FormData) => {
+    try {
+      const formValues = {
+        title: formData.get("title") as string,
+        author: formData.get("author") as string,
+        image_url: formData.get("image_url") as string,
+        file: formData.get("file") as File,
+      };
+
+      // pass it to bookFormSchema and check validation
+      await bookFormSchema.parseAsync(formValues);
+
+      console.log(formValues);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const fieldErrors = error.flatten().fieldErrors;
+        setErrors(fieldErrors as unknown as Record<string, string>);
+
+        const errorMessages = Object.values(fieldErrors).flat().join(", ");
+
+        toast({
+          variant: "destructive",
+          title: "Input Error!",
+          description:
+            errorMessages ||
+            "There was a problem with your input. Please try again!",
+        });
+
+        return {
+          ...previousState,
+          error: "Validation failed",
+          status: "ERROR",
+        };
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: "There was a problem with your request.",
+        });
+        return {
+          ...previousState,
+          error: "An unexpected error has occurred",
+          status: "ERROR",
+        };
+      }
+    }
+  };
+
+  const [data, formSubmit, isPending] = useActionState(
+    handleFormSubmit,
+    undefined
+  );
 
   return (
     <div className="container relative h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
@@ -38,7 +103,7 @@ export default function AuthForm() {
 
         {/* Centered Image */}
         <div className="flex flex-col items-center justify-center h-full space-y-4 z-20">
-          {imageUrl ? (
+          {isValidImage ? (
             <Image
               src={`${imageUrl}`}
               alt="Book Cover"
@@ -75,7 +140,7 @@ export default function AuthForm() {
       {/* RIGHT SIDE */}
       <div className="lg:p-8 w-full flex items-center justify-center min-h-screen">
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[450px]">
-          <form onSubmit={() => {}}>
+          <form action={formSubmit}>
             <h1 className="text-4xl font-extrabold tracking-tight mb-4 underline">
               Upload your Book
             </h1>
@@ -94,6 +159,7 @@ export default function AuthForm() {
                 </Label>
                 <Input
                   id="title"
+                  name="title"
                   placeholder="Title of the Book (e.g. Moby Dick)"
                   type="text"
                   className="mt-2"
@@ -109,6 +175,7 @@ export default function AuthForm() {
                 </Label>
                 <Input
                   id="author"
+                  name="author"
                   placeholder="Author of the Book (e.g. Herman Melville)"
                   type="text"
                   className="mt-2"
@@ -129,6 +196,7 @@ export default function AuthForm() {
                 </Label>
                 <Input
                   id="image_url"
+                  name="image_url"
                   placeholder="https://images.booksense.com/images/007/839/9781954839007.jpg"
                   type="text"
                   className="mt-2"
@@ -147,12 +215,12 @@ export default function AuthForm() {
                   <File className="w-4 h-4 mr-2" />
                   ePub:
                 </Label>
-                <Input id="file" type="file" className="mt-2 p-2" />
+                <Input id="file" name="file" type="file" className="mt-2 p-2" />
               </div>
               <p className="text-sm text-muted-foreground mt-4 mb-2">
                 Once you are satisfied, click the upload button below.
               </p>
-              <Button>
+              <Button disabled={isPending}>
                 <UploadIcon />
                 Upload Book
               </Button>
@@ -168,7 +236,12 @@ export default function AuthForm() {
               </span>
             </div>
           </div>
-          <Button variant="outline" type="button" onClick={() => redirect("/")}>
+          <Button
+            variant="outline"
+            type="button"
+            onClick={() => redirect("/")}
+            disabled={isPending}
+          >
             Cancel
           </Button>
           <p className="px-8 text-center text-sm text-muted-foreground">

@@ -30,9 +30,17 @@ export default function AuthForm() {
 
         {/* Centered Image */}
         <div className="flex flex-col items-center justify-center h-full space-y-4 z-20">
-          {imageUrl && (
+          {imageUrl ? (
             <Image
               src={`${imageUrl}`}
+              alt="Book Cover"
+              width={400}
+              height={600}
+              className="rounded-lg object-contain"
+            />
+          ) : (
+            <Image
+              src="https://cdn.dribbble.com/users/1637204/screenshots/5912295/attachments/1271645/moby-dick-book-cover-illustration-attachment.png"
               alt="Book Cover"
               width={400}
               height={600}
@@ -45,7 +53,8 @@ export default function AuthForm() {
         <div className="relative z-20 mt-auto">
           <blockquote className="space-y-2">
             <p className="text-lg">
-              Try inserting your image url for your cover and view it above
+              Try inserting your image url for your cover and view it above.
+              Recommended: PNGs
             </p>
             <footer className="text-sm">
               - This image will be displayed on the homepage in a card format.

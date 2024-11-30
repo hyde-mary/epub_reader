@@ -19,12 +19,16 @@ import { Separator } from "@/components/ui/separator";
 import { bookFormSchema } from "@/lib/validation";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
+import { uploadBook } from "@/lib/actions";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   // we first need to validate whether the image is valid before rendering it
   const [imageUrl, setImageUrl] = useState<string>("");
   const [isValidImage, setIsValidImage] = useState<boolean>(false);
+  const [file, setFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const router = useRouter();
   const { toast } = useToast();
 
   const handleImageUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,6 +38,16 @@ export default function Page() {
     const validImageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
     const isValid = validImageExtensions.some((ext) => url.endsWith(ext));
     setIsValidImage(isValid);
+  };
+
+  // for file change
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : null;
+    if (file) {
+      setFile(file);
+    } else {
+      setFile(null);
+    }
   };
 
   const handleFormSubmit = async (previousState: any, formData: FormData) => {
@@ -48,7 +62,17 @@ export default function Page() {
       // pass it to bookFormSchema and check validation
       await bookFormSchema.parseAsync(formValues);
 
-      console.log(formValues);
+      const result = await uploadBook(previousState, formData, file);
+
+      if (result.status === "success") {
+        toast({
+          variant: "default",
+          title: "Book Upload Success!",
+          description:
+            "Your Book has been uploaded to the Database Successfully!",
+        });
+        router.push(`/book/${result._id}`);
+      }
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors = error.flatten().fieldErrors;
@@ -164,6 +188,9 @@ export default function Page() {
                   type="text"
                   className="mt-2"
                 />
+                {errors.title && (
+                  <p className="text-red-400 text-sm">{errors.title}</p>
+                )}
               </div>
               <div className="grid gap-1 mb-2">
                 <Label
@@ -180,6 +207,9 @@ export default function Page() {
                   type="text"
                   className="mt-2"
                 />
+                {errors.author && (
+                  <p className="text-red-400 text-sm">{errors.author}</p>
+                )}
               </div>
               <Separator />
               <p className="text-sm text-muted-foreground">
@@ -202,6 +232,9 @@ export default function Page() {
                   className="mt-2"
                   onChange={handleImageUrlChange}
                 />
+                {errors.image_url && (
+                  <p className="text-red-400 text-sm">{errors.image_url}</p>
+                )}
               </div>
               <Separator className="mt-2 mb-2" />
               <p className="text-sm text-muted-foreground mb-2">
@@ -215,7 +248,16 @@ export default function Page() {
                   <File className="w-4 h-4 mr-2" />
                   ePub:
                 </Label>
-                <Input id="file" name="file" type="file" className="mt-2 p-2" />
+                <Input
+                  id="file"
+                  name="file"
+                  type="file"
+                  className="mt-2 p-2"
+                  onChange={handleFileChange}
+                />
+                {errors.file && (
+                  <p className="text-red-400 text-sm">{errors.file}</p>
+                )}
               </div>
               <p className="text-sm text-muted-foreground mt-4 mb-2">
                 Once you are satisfied, click the upload button below.

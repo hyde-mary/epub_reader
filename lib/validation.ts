@@ -11,7 +11,7 @@ export const bookFormSchema = z.object({
     .max(50, { message: "Author must not exceed 50 characters." }),
   image_url: z
     .string()
-    .url({ message: "Please provide a valid URL" })
+    .url({ message: "Please provide a valid URL. " })
     .refine((url) => /\.(jpeg|jpg|gif|png|webp|bmp|svg)$/i.test(url), {
       message: "The URL must point to a valid image file (e.g., .jpg, .png)",
     }),

@@ -21,7 +21,7 @@ export const book = defineType({
       to: { type: "user" },
     }),
     defineField({
-      name: "cover",
+      name: "image_url",
       type: "url",
     }),
     defineField({

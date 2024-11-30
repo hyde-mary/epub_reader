@@ -32,8 +32,8 @@ const Navbar: React.FC<NavbarProps> = ({ username, image }) => {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isSticky ? "bg-white shadow-md" : "border-b bg-white"}`}
     >
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center">
+        <div className="relative flex items-center h-16">
+          <div className="flex items-center absolute left-0">
             {/* Name of the user can go here */}
             {image && (
               <Image
@@ -46,7 +46,7 @@ const Navbar: React.FC<NavbarProps> = ({ username, image }) => {
             )}
             <p className="text-lg font-semibold ml-4">{username}</p>
           </div>
-          <div className="flex-1 flex justify-center">
+          <div className="absolute inset-0 flex justify-center items-center">
             <Button
               size="icon"
               variant="outline"
@@ -56,7 +56,9 @@ const Navbar: React.FC<NavbarProps> = ({ username, image }) => {
               <Plus className="h-4 w-4" />
             </Button>
           </div>
-          <SignOut />
+          <div className="absolute right-0">
+            <SignOut />
+          </div>
         </div>
       </div>
     </nav>

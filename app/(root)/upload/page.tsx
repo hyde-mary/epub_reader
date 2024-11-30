@@ -5,9 +5,17 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Book, BookUser, ImageIcon, Upload, UploadIcon } from "lucide-react";
+import {
+  Book,
+  BookUser,
+  File,
+  ImageIcon,
+  Upload,
+  UploadIcon,
+} from "lucide-react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
+import { Separator } from "@/components/ui/separator";
 
 export default function AuthForm() {
   const [imageUrl, setImageUrl] = useState<string>("");
@@ -66,7 +74,7 @@ export default function AuthForm() {
 
       {/* RIGHT SIDE */}
       <div className="lg:p-8 w-full flex items-center justify-center min-h-screen">
-        <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+        <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[450px]">
           <form onSubmit={() => {}}>
             <h1 className="text-4xl font-extrabold tracking-tight mb-4 underline">
               Upload your Book
@@ -78,14 +86,14 @@ export default function AuthForm() {
             <div className="grid gap-2">
               <div className="grid gap-1 mb-2">
                 <Label
-                  htmlFor="Title"
+                  htmlFor="title"
                   className="font-bold text-md flex items-center space-x-3"
                 >
-                  <Book className="w-4 h-4" />
+                  <Book className="w-4 h-4 mr-2" />
                   Title:
                 </Label>
                 <Input
-                  id="Title"
+                  id="title"
                   placeholder="Title of the Book (e.g. Moby Dick)"
                   type="text"
                   className="mt-2"
@@ -93,40 +101,55 @@ export default function AuthForm() {
               </div>
               <div className="grid gap-1 mb-2">
                 <Label
-                  htmlFor="Author"
+                  htmlFor="author"
                   className="font-bold text-md flex items-center space-x-3"
                 >
-                  <BookUser className="w-4 h-4" />
+                  <BookUser className="w-4 h-4 mr-2" />
                   Author:
                 </Label>
                 <Input
-                  id="Author"
+                  id="author"
                   placeholder="Author of the Book (e.g. Herman Melville)"
                   type="text"
                   className="mt-2"
                 />
               </div>
+              <Separator />
               <p className="text-sm text-muted-foreground">
                 Furthermore, you are to provide an image URL cover for your
                 book. This will appear in your homepage
               </p>
-              <div className="grid gap-1 mt-4">
+              <div className="grid gap-1 mt-2">
                 <Label
-                  htmlFor="Author"
+                  htmlFor="image_url"
                   className="font-bold text-md flex items-center space-x-3"
                 >
-                  <ImageIcon className="w-4 h-4" />
+                  <ImageIcon className="w-4 h-4 mr-2" />
                   Cover Image URL:
                 </Label>
                 <Input
-                  id="Author"
+                  id="image_url"
                   placeholder="https://images.booksense.com/images/007/839/9781954839007.jpg"
                   type="text"
                   className="mt-2"
                   onChange={handleImageUrlChange}
                 />
               </div>
-              <p className="text-sm text-muted-foreground mt-6 mb-2">
+              <Separator className="mt-2 mb-2" />
+              <p className="text-sm text-muted-foreground mb-2">
+                Finally, upload your ePub below:
+              </p>
+              <div className="grid gap-1">
+                <Label
+                  htmlFor="file"
+                  className="font-bold text-md flex items-center space-x-3"
+                >
+                  <File className="w-4 h-4 mr-2" />
+                  ePub:
+                </Label>
+                <Input id="file" type="file" className="mt-2 p-2" />
+              </div>
+              <p className="text-sm text-muted-foreground mt-4 mb-2">
                 Once you are satisfied, click the upload button below.
               </p>
               <Button>

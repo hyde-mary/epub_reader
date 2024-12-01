@@ -1,10 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import Image from "next/image";
-import { CalendarIcon, CalendarPlus2 } from "lucide-react";
+import { CalendarPlus2 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
-export function BookCard({ book }) {
+interface Book {
+  title: string;
+  author: string;
+  _createdAt: string;
+  image_url: string;
+  file: File;
+}
+
+export function BookCard({ book }: { book: Book }) {
   const { author, _createdAt, title, image_url } = book;
   return (
     <li className="py-6 px-5">

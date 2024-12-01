@@ -65,3 +65,27 @@ export const uploadBook = async (
     });
   }
 };
+
+export const deleteBook = async (id: string) => {
+  const session = await auth();
+  if (!session) {
+    return parseServerActionResponse({
+      error: "Not Authenticated!",
+      status: "error",
+    });
+  }
+
+  try {
+    const result = await writeClient.delete(id);
+
+    return parseServerActionResponse({
+      data: result,
+      status: "success",
+    });
+  } catch (error) {
+    return parseServerActionResponse({
+      error: JSON.stringify(error),
+      status: "error",
+    });
+  }
+};

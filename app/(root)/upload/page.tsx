@@ -50,6 +50,7 @@ export default function Page() {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleFormSubmit = async (previousState: any, formData: FormData) => {
     try {
       const formValues = {
@@ -67,7 +68,7 @@ export default function Page() {
       if (result.status === "success") {
         toast({
           variant: "default",
-          title: "Book Upload Success!",
+          title: "Book Upload Successfully!",
           description:
             "Your Book has been uploaded to the Database Successfully!",
         });
@@ -108,6 +109,7 @@ export default function Page() {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [data, formSubmit, isPending] = useActionState(
     handleFormSubmit,
     undefined
@@ -133,7 +135,7 @@ export default function Page() {
               alt="Book Cover"
               width={400}
               height={600}
-              className="rounded-lg object-contain"
+              className="rounded-lg object-contain border-8 border-white"
             />
           ) : (
             <Image

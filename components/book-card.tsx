@@ -1,10 +1,12 @@
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import Image from "next/image";
 import { CalendarPlus2 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
+import BookCardRead from "./book-card-read";
+import { BookCardAction } from "./book-card-action";
 
 interface Book {
+  _id: string;
   title: string;
   author: string;
   _createdAt: string;
@@ -13,7 +15,7 @@ interface Book {
 }
 
 export function BookCard({ book }: { book: Book }) {
-  const { author, _createdAt, title, image_url } = book;
+  const { _id, author, _createdAt, title, image_url } = book;
   return (
     <li className="py-6 px-5">
       <Card className="w-[350px] overflow-hidden">
@@ -36,8 +38,9 @@ export function BookCard({ book }: { book: Book }) {
             <span>{formatDate(_createdAt)}</span>
           </div>
         </CardContent>
-        <CardFooter className="px-4">
-          <Button className="w-full">Read Now</Button>
+        <CardFooter className="px-4 gap-x-2">
+          <BookCardRead id={_id} />
+          <BookCardAction id={_id} />
         </CardFooter>
       </Card>
     </li>

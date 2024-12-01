@@ -1,6 +1,8 @@
 import { auth } from "@/auth";
 import { BookCard } from "@/components/book-card";
 import Navbar from "@/components/nav-bar";
+import { sanityFetch } from "@/sanity/lib/live";
+import { USER_BOOKS_QUERY } from "@/sanity/lib/queries";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
@@ -11,43 +13,16 @@ export default async function Home() {
     redirect("/auth");
   }
 
-  const books = [
-    {
-      title: "Spirit Chronicles volume 5",
-      author: "Yuri Kitayama",
-      _createdAt: "2024-10-5",
-    },
-    {
-      title: "Spirit Chronicles volume 5",
-      author: "Yuri Kitayama",
-      _createdAt: "2024-10-5",
-    },
-    {
-      title: "Spirit Chronicles volume 5",
-      author: "Yuri Kitayama",
-      _createdAt: "2024-10-5",
-    },
-    {
-      title: "Spirit Chronicles volume 5",
-      author: "Yuri Kitayama",
-      _createdAt: "2024-10-5",
-    },
-    {
-      title: "Spirit Chronicles volume 5",
-      author: "Yuri Kitayama",
-      _createdAt: "2024-10-5",
-    },
-    {
-      title: "Spirit Chronicles volume 5",
-      author: "Yuri Kitayama",
-      _createdAt: "2024-10-5",
-    },
-    {
-      title: "Spirit Chronicles volume 5",
-      author: "Yuri Kitayama",
-      _createdAt: "2024-10-5",
-    },
-  ];
+  let books = [];
+
+  try {
+    const params = { userId: session?.id };
+    const { data } = await sanityFetch({ query: USER_BOOKS_QUERY, params });
+    books = data || [];
+  } catch (error) {
+    console.log(error);
+    books = [];
+  }
 
   return (
     <>

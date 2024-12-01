@@ -1,8 +1,19 @@
 import { auth } from "@/auth";
 import { BookCard } from "@/components/book-card";
 import Navbar from "@/components/nav-bar";
+import { sanityFetch, SanityLive } from "@/sanity/lib/live";
+import { USER_BOOKS_QUERY } from "@/sanity/lib/queries";
 import Image from "next/image";
 import { redirect } from "next/navigation";
+import { Key } from "react";
+
+interface Book {
+  title: string;
+  author: string;
+  _createdAt: string;
+  image_url: string;
+  file: File;
+}
 
 export default async function Home() {
   const session = await auth();
@@ -11,43 +22,16 @@ export default async function Home() {
     redirect("/auth");
   }
 
-  const books = [
-    {
-      title: "Spirit Chronicles volume 5",
-      author: "Yuri Kitayama",
-      _createdAt: "2024-10-5",
-    },
-    {
-      title: "Spirit Chronicles volume 5",
-      author: "Yuri Kitayama",
-      _createdAt: "2024-10-5",
-    },
-    {
-      title: "Spirit Chronicles volume 5",
-      author: "Yuri Kitayama",
-      _createdAt: "2024-10-5",
-    },
-    {
-      title: "Spirit Chronicles volume 5",
-      author: "Yuri Kitayama",
-      _createdAt: "2024-10-5",
-    },
-    {
-      title: "Spirit Chronicles volume 5",
-      author: "Yuri Kitayama",
-      _createdAt: "2024-10-5",
-    },
-    {
-      title: "Spirit Chronicles volume 5",
-      author: "Yuri Kitayama",
-      _createdAt: "2024-10-5",
-    },
-    {
-      title: "Spirit Chronicles volume 5",
-      author: "Yuri Kitayama",
-      _createdAt: "2024-10-5",
-    },
-  ];
+  let books = [];
+
+  try {
+    const params = { userId: session?.id };
+    const { data } = await sanityFetch({ query: USER_BOOKS_QUERY, params });
+    books = data || [];
+  } catch (error) {
+    console.log(error);
+    books = [];
+  }
 
   return (
     <>
@@ -60,7 +44,7 @@ export default async function Home() {
               {`Your Library: (${books.length})`}
             </h1>
             <ul className="grid xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-5;">
-              {books.map((book, index) => (
+              {books.map((book: Book, index: Key) => (
                 <BookCard key={index} book={book} />
               ))}
             </ul>
@@ -95,6 +79,7 @@ export default async function Home() {
           </div>
         </section>
       )}
+      <SanityLive />
     </>
   );
 }

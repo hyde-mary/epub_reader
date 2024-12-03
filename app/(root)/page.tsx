@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import { Key } from "react";
 
 interface Book {
+  _id: string;
   title: string;
   author: string;
   _createdAt: string;

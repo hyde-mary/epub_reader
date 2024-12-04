@@ -1,6 +1,8 @@
 import { auth } from "@/auth";
-import Navbar from "@/components/nav-bar";
-import { redirect } from "next/navigation";
+import BookReader from "@/components/book-reader";
+import { client } from "@/sanity/lib/client";
+import { FILE_FOR_BOOK_QUERY } from "@/sanity/lib/queries";
+import { notFound, redirect } from "next/navigation";
 import React from "react";
 
 const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
@@ -11,11 +13,18 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
 
   const id = (await params).id;
 
+  const file = await client.fetch(FILE_FOR_BOOK_QUERY, { id });
+
+  if (!file) {
+    return notFound();
+  }
+
+  file.url = "https://react-reader.metabits.no/files/alice.epub";
+
   return (
     <>
-      <Navbar username={session?.user?.name} image={session?.user?.image} />
-      <section className="h-screen flex justify-center">
-        <div className="max-w-full mt-28">{id}</div>
+      <section>
+        <BookReader file={file} />
       </section>
     </>
   );

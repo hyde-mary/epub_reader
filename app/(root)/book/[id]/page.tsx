@@ -21,13 +21,14 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
 
   if (!book) return notFound();
 
+  const title = book.title;
   const file_id = book.file_id;
   const file = await client.fetch(FILE_QUERY_BY_ID, { file_id });
 
   return (
     <>
       <section>
-        <BookReader file={file} />
+        <BookReader file={file} title={title} />
       </section>
     </>
   );

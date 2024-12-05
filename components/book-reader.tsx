@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch";
 
 interface BookReaderProps {
   file: { url: string };
+  title: string;
 }
 
 type ITheme = "light" | "dark";
@@ -30,7 +31,7 @@ function updateTheme(rendition: Rendition, theme: ITheme) {
   }
 }
 
-const BookReader = ({ file }: BookReaderProps) => {
+const BookReader = ({ file, title }: BookReaderProps) => {
   const [location, setLocation] = useState<string | number>(0);
   const rendition = useRef<Rendition | undefined>(undefined);
   const [theme, setTheme] = useState<ITheme>("dark");
@@ -102,7 +103,7 @@ const BookReader = ({ file }: BookReaderProps) => {
       <div className="h-[calc(100vh-54px)]">
         <ReactReader
           url={file.url}
-          title={"Alice in Wonderland"}
+          title={title}
           location={location}
           locationChanged={(loc: string) => setLocation(loc)}
           readerStyles={

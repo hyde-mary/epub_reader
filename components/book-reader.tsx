@@ -39,9 +39,15 @@ const BookReader = ({ file, title }: BookReaderProps) => {
       defaultValue: 0,
     }
   );
+  const [fontSize, setFontSize] = useLocalStorageState<number>(
+    "persist-font-size", // Save font size in localStorage
+    {
+      defaultValue: 16, // Default font size
+    }
+  );
+
   const rendition = useRef<Rendition | undefined>(undefined);
   const [theme, setTheme] = useState<ITheme>("dark");
-  const [fontSize, setFontSize] = useState<number>(16);
 
   useEffect(() => {
     if (rendition.current) {

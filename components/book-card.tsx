@@ -11,11 +11,12 @@ interface Book {
   author: string;
   _createdAt: string;
   image_url: string;
+  file_id: string;
   file: File;
 }
 
 export function BookCard({ book }: { book: Book }) {
-  const { _id, author, _createdAt, title, image_url } = book;
+  const { _id, author, _createdAt, title, image_url, file_id } = book;
   return (
     <li className="py-6 px-5">
       <Card className="w-[350px] overflow-hidden">
@@ -40,7 +41,7 @@ export function BookCard({ book }: { book: Book }) {
         </CardContent>
         <CardFooter className="px-4 gap-x-2">
           <BookCardRead id={_id} />
-          <BookCardAction id={_id} />
+          <BookCardAction id={_id} file_id={file_id} />
         </CardFooter>
       </Card>
     </li>

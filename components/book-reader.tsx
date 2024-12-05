@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Home, MinusCircle, PlusCircle } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import useLocalStorageState from "use-local-storage-state";
 
 interface BookReaderProps {
   file: { url: string };
@@ -32,7 +33,12 @@ function updateTheme(rendition: Rendition, theme: ITheme) {
 }
 
 const BookReader = ({ file, title }: BookReaderProps) => {
-  const [location, setLocation] = useState<string | number>(0);
+  const [location, setLocation] = useLocalStorageState<string | number>(
+    "persist-location",
+    {
+      defaultValue: 0,
+    }
+  );
   const rendition = useRef<Rendition | undefined>(undefined);
   const [theme, setTheme] = useState<ITheme>("dark");
   const [fontSize, setFontSize] = useState<number>(16);

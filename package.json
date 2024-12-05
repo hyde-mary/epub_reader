@@ -31,7 +31,8 @@
     "sanity": "^3.65.0",
     "styled-components": "^6.1.13",
     "tailwind-merge": "^2.5.5",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "use-local-storage-state": "^19.5.0"
   },
   "devDependencies": {
     "@types/node": "^20",

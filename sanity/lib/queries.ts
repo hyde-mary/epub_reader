@@ -8,6 +8,7 @@ export const USER_BOOKS_QUERY = defineQuery(`
     user,
     author,
     image_url,
+    file_id,
     _createdAt,
 }`);
 

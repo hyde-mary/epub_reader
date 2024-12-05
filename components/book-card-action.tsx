@@ -26,7 +26,13 @@ import {
 import { useState } from "react";
 import { Separator } from "./ui/separator";
 
-export function BookCardAction({ id }: { id: string }) {
+export function BookCardAction({
+  id,
+  file_id,
+}: {
+  id: string;
+  file_id: string;
+}) {
   const { toast } = useToast();
   const [open, setOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -34,8 +40,7 @@ export function BookCardAction({ id }: { id: string }) {
   const handleDelete = async () => {
     setIsLoading(true);
     try {
-      // try to delete the book
-      const result = await deleteBook(id);
+      const result = await deleteBook(id, file_id);
       if (result.status === "success") {
         toast({
           variant: "default",

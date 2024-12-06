@@ -7,9 +7,11 @@ import Link from "next/link";
 import { Home, MinusCircle, PlusCircle } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import useLocalStorageState from "use-local-storage-state";
 
 interface BookReaderProps {
   file: { url: string };
+  title: string;
 }
 
 type ITheme = "light" | "dark";
@@ -30,11 +32,22 @@ function updateTheme(rendition: Rendition, theme: ITheme) {
   }
 }
 
-const BookReader = ({ file }: BookReaderProps) => {
-  const [location, setLocation] = useState<string | number>(0);
+const BookReader = ({ file, title }: BookReaderProps) => {
+  const [location, setLocation] = useLocalStorageState<string | number>(
+    "persist-location",
+    {
+      defaultValue: 0,
+    }
+  );
+  const [fontSize, setFontSize] = useLocalStorageState<number>(
+    "persist-font-size", // Save font size in localStorage
+    {
+      defaultValue: 16, // Default font size
+    }
+  );
+
   const rendition = useRef<Rendition | undefined>(undefined);
   const [theme, setTheme] = useState<ITheme>("dark");
-  const [fontSize, setFontSize] = useState<number>(16);
 
   useEffect(() => {
     if (rendition.current) {
@@ -102,7 +115,7 @@ const BookReader = ({ file }: BookReaderProps) => {
       <div className="h-[calc(100vh-54px)]">
         <ReactReader
           url={file.url}
-          title={"Alice in Wonderland"}
+          title={title}
           location={location}
           locationChanged={(loc: string) => setLocation(loc)}
           readerStyles={

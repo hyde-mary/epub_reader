@@ -23,9 +23,14 @@ export const BOOKS_BY_ID_QUERY = defineQuery(`
   _createdAt,
 }`);
 
-export const FILE_QUERY_BY_ID = defineQuery(`
+export const FILE_BY_ID_QUERY = defineQuery(`
   *[_type == "sanity.fileAsset" && _id == $file_id][0]{
+  _id,
+  originalFilename,
   url,
+  size,
+  extension,
+  _createdAt,
 }`);
 
 export const USER_BY_GITHUB_ID_QUERY = defineQuery(`

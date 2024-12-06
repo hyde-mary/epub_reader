@@ -12,30 +12,36 @@ interface DockReaderProps {
 const DockReader = ({ fontSize, setFontSize, file_url }: DockReaderProps) => {
   const increaseFontSize = () => {
     if (fontSize < 24) {
-      setFontSize(fontSize + 2);
+      setFontSize(fontSize + 2); // Trigger parent state update
+      console.log("Increasing font size to:", fontSize + 2);
     }
-    console.log(fontSize);
   };
 
   const decreaseFontSize = () => {
     if (fontSize > 12) {
-      setFontSize(fontSize - 2);
+      setFontSize(fontSize - 2); // Trigger parent state update
+      console.log("Decreasing font size to:", fontSize - 2);
     }
-    console.log(fontSize);
   };
 
   return (
-    <div className="w-full mx-auto px-2 sm:px-3 lg:px-4 p-1 pt-2 pb-2">
+    <div className="w-full mx-auto px-2 sm:px-3 lg:px-4 p-1 pt-2 pb-2 text-slate-600">
       <div className="relative flex items-center">
-        <div className="flex items-center absolute left-0 text-black">
+        <div className="flex items-center absolute left-0">
           <Link href="/">
             <HomeIcon className="w-6 h-6" />
           </Link>
         </div>
         <div className="absolute inset-0 flex justify-center items-center">
-          <MinusCircle className="w-6 h-6 mr-2" onClick={decreaseFontSize} />
+          <MinusCircle
+            className="w-6 h-6 mr-2 cursor-pointer"
+            onClick={decreaseFontSize}
+          />
           <p className="font-semibold text-lg">Font Size</p>
-          <PlusCircle className="w-6 h-6 ml-2" onClick={increaseFontSize} />
+          <PlusCircle
+            className="w-6 h-6 ml-2 cursor-pointer"
+            onClick={increaseFontSize}
+          />
         </div>
         <div className="absolute right-0 flex">
           <a href={file_url} download className="w-6 h-6 cursor-pointer">

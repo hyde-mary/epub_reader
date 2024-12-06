@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import DockReader from "./dock-reader";
+import ContentReader from "./content-reader";
+import useLocalStorageState from "use-local-storage-state";
 
 interface Book {
   _id: string;
@@ -28,15 +30,31 @@ interface BookReaderProps {
 }
 
 const BookReader = ({ book, file }: BookReaderProps) => {
-  const [fontSize, setFontSize] = useState<number>(16);
+  const [fontSize, setFontSize] = useState<number>(18);
   const file_url = file.url;
+
+  const [location, setLocation] = useLocalStorageState<string | number>(
+    "persist-location",
+    {
+      defaultValue: 0,
+    }
+  );
+
   return (
     <div className="flex flex-col h-screen overflow-hidden">
-      <section className="flex-grow-[8] bg-slate-100"></section>
+      <section className="flex-grow-[8] bg-slate-100">
+        <ContentReader
+          book={book}
+          file={file}
+          location={location}
+          setLocation={setLocation}
+          fontSize={fontSize}
+        />
+      </section>
 
       <div className="relative group">
         <div
-          className={`absolute left-1/2 bottom-[-45px] transform -translate-x-1/2 bg-slate-200 border border-slate-400 shadow-2xl rounded-xl p-6 max-w-4xl w-3/4 transition-all duration-300 ease-in-out group-hover:bottom-2`}
+          className={`absolute left-1/2 bottom-[-45px] transform -translate-x-1/2 bg-slate-100 border border-slate-300 shadow-2xl rounded-xl p-6 max-w-4xl w-3/4 transition-all duration-300 ease-in-out group-hover:bottom-2 z-50`}
         >
           <DockReader
             fontSize={fontSize}

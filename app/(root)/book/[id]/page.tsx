@@ -13,10 +13,6 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
 
   const id = (await params).id;
 
-  if (!id) {
-    throw new Error("Something unexpected occurred");
-  }
-
   const book = await client.fetch(BOOKS_BY_ID_QUERY, { id });
 
   if (!book) return notFound();

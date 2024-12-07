@@ -21,9 +21,16 @@ import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
 import { uploadBook } from "@/lib/actions";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function Page() {
   // we first need to validate whether the image is valid before rendering it
+
+  const { data: session } = useSession();
+  if (!session) {
+    redirect("/");
+  }
+
   const [imageUrl, setImageUrl] = useState<string>("");
   const [isValidImage, setIsValidImage] = useState<boolean>(false);
   const [file, setFile] = useState<File | null>(null);

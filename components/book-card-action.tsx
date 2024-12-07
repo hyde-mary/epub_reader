@@ -1,5 +1,5 @@
 "use client";
-import { Ellipsis, Trash } from "lucide-react";
+import { Ellipsis, FilePen, Trash } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -72,6 +72,15 @@ export function BookCardAction({
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem>
+          <Button
+            variant="ghost"
+            className="w-full justify-start p-0"
+            disabled={isLoading}
+          >
+            <FilePen className="mr-2 h-4 w-4" /> Update
+          </Button>
+        </DropdownMenuItem>
         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
           <AlertDialog open={open} onOpenChange={setOpen}>
             <AlertDialogTrigger asChild>

@@ -1,3 +1,9 @@
+# ⚠️ Disclaimer
+
+**This is a personal project for educational purposes only**.
+Please **do not upload sensitive, confidential, or important information into this application**, as the security measures implemented in this project are minimal and may not protect user data adequately. <br><br>
+The project is not intended for production use, and any use of uploaded data is at your own risk.
+
 # 📚 **Epub Reader**
 
 **Epub Reader** is a web-based application project which allows users to upload & read ePub books on the browser.

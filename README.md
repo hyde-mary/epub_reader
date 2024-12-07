@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📚 **Epub Reader**
 
-## Getting Started
+**Epub Reader** is a web-based application project which allows users to upload & read ePub books on the browser.
 
-First, run the development server:
+---
+
+## 🚀 **Features**
+
+- **Authentication System:** Create an account using GitHub and upload books into your account
+- **ePub File Upload:** Upload ePub files unto the database and view it online.
+- **ePub File Reader:** Read the ePub files you have uploaded in a reader which is built in the application itself.
+- **ePub File Delete:** Delete ePub Files
+- **ePub File Update:** Update basic ePub information
+
+---
+
+## 🛠 **Tech Stack**
+
+### Front End:
+
+- **NextJS:** React Framework
+- **Tailwind CSS:** CSS Framework
+- **Shadcn/ui:** Component Library
+
+### Back End:
+
+- **Sanity CMS:** Content Management System for User and Book Data
+
+---
+
+## 📂 **Setup & Installation**
+
+Follow these steps to get the project up and running locally:
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/hyde-mary/epub_reader.git
+cd epub-reader
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Setup Environment Variables
+
+Create a .env.local file at the root of your project and add the following:
+
+```env
+NEXT_PUBLIC_SANITY_PROJECT_ID=your_next_public_sanity_project_id
+NEXT_PUBLIC_SANITY_DATASET=your_next_public_sanity_dataset
+AUTH_SECRET=your_auth_secret
+AUTH_GITHUB_ID=your_auth_github_id
+AUTH_GITHUB_SECRET=your_auth_github_secret
+SANITY_WRITE_TOKEN=your_sanity_write_token
+```
+
+Replace `your_next_public_sanity_project_id`, `your_next_public_sanity_dataset`, `your_auth_secret`, `your_auth_github_id`, `your_auth_github_secret`, `your_sanity_write_token` with your actual credentials.
+
+### 4. Run the Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🔧 **How to Use**
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Authenticate using GitHub
+2. Upload an eBook by clicking the + icon at the top
+3. Click the Upload Button
+4. Click Read Now

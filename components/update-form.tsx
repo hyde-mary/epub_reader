@@ -1,42 +1,61 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import React, { useActionState, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Book,
-  BookUser,
-  File,
-  ImageIcon,
-  Upload,
-  UploadIcon,
-} from "lucide-react";
+import { Book, BookUser, File, ImageIcon, Pencil, Upload } from "lucide-react";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
-import { createBookFormSchema } from "@/lib/validation";
+import { updateBookFormSchema } from "@/lib/validation";
 import { z } from "zod";
 import { useToast } from "@/hooks/use-toast";
-import { uploadBook } from "@/lib/upload-book";
+import { updateBook } from "@/lib/update-book";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-export default function Page() {
-  // we first need to validate whether the image is valid before rendering it
+interface Book {
+  _id: string;
+  title: string;
+  user: string;
+  author: string;
+  image_url: string;
+  file_id: string;
+  _createdAt: string;
+}
 
+interface UpdateFormProps {
+  book: Book;
+}
+
+const UpdateForm = ({ book }: UpdateFormProps) => {
+  // we first need to validate whether the image is valid before rendering it
   const { data: session } = useSession();
+
   if (!session) {
     redirect("/");
   }
 
-  const [imageUrl, setImageUrl] = useState<string>("");
-  const [isValidImage, setIsValidImage] = useState<boolean>(false);
-  const [file, setFile] = useState<File | null>(null);
+  const [title, setTitle] = useState<string>(book.title);
+  const [author, setAuthor] = useState<string>(book.author);
+  const [imageUrl, setImageUrl] = useState<string>(book.image_url);
+  const [isValidImage, setIsValidImage] = useState<boolean>(true);
+
   const [errors, setErrors] = useState<Record<string, string>>({});
   const router = useRouter();
   const { toast } = useToast();
+
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const title = event.target.value;
+    setTitle(title);
+  };
+
+  const handleAuthorChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const author = event.target.value;
+    setAuthor(author);
+  };
 
   const handleImageUrlChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const url = event.target.value;
@@ -47,16 +66,6 @@ export default function Page() {
     setIsValidImage(isValid);
   };
 
-  // for file change
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files ? e.target.files[0] : null;
-    if (file) {
-      setFile(file);
-    } else {
-      setFile(null);
-    }
-  };
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleFormSubmit = async (previousState: any, formData: FormData) => {
     try {
@@ -64,22 +73,20 @@ export default function Page() {
         title: formData.get("title") as string,
         author: formData.get("author") as string,
         image_url: formData.get("image_url") as string,
-        file: formData.get("file") as File,
       };
 
       // pass it to bookFormSchema and check validation
-      await createBookFormSchema.parseAsync(formValues);
+      await updateBookFormSchema.parseAsync(formValues);
 
-      const result = await uploadBook(previousState, formData, file);
+      const result = await updateBook(previousState, formData, book._id);
 
       if (result.status === "success") {
         toast({
           variant: "default",
-          title: "Book Upload Successfully!",
-          description:
-            "Your Book has been uploaded to the Database Successfully!",
+          title: "Book Update Successfully!",
+          description: "Your Book's Information has been Updated!",
         });
-        router.push(`/book/${result._id}`);
+        router.push("/");
       }
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -196,6 +203,8 @@ export default function Page() {
                   placeholder="Title of the Book (e.g. Moby Dick)"
                   type="text"
                   className="mt-2"
+                  value={title}
+                  onChange={handleTitleChange}
                 />
                 {errors.title && (
                   <p className="text-red-400 text-sm">{errors.title}</p>
@@ -215,6 +224,8 @@ export default function Page() {
                   placeholder="Author of the Book (e.g. Herman Melville)"
                   type="text"
                   className="mt-2"
+                  value={author}
+                  onChange={handleAuthorChange}
                 />
                 {errors.author && (
                   <p className="text-red-400 text-sm">{errors.author}</p>
@@ -240,14 +251,17 @@ export default function Page() {
                   type="text"
                   className="mt-2"
                   onChange={handleImageUrlChange}
+                  value={imageUrl}
                 />
                 {errors.image_url && (
                   <p className="text-red-400 text-sm">{errors.image_url}</p>
                 )}
               </div>
               <Separator className="mt-2 mb-2" />
-              <p className="text-sm text-muted-foreground mb-2">
-                Finally, upload your ePub below:
+              <p className="text-sm text-red-400 mb-2">
+                To update the epub file, we suggest deleting the book and
+                creating a new one instead as this feature is not available
+                right now:
               </p>
               <div className="grid gap-1">
                 <Label
@@ -262,18 +276,15 @@ export default function Page() {
                   name="file"
                   type="file"
                   className="mt-2 p-2"
-                  onChange={handleFileChange}
+                  disabled={true}
                 />
-                {errors.file && (
-                  <p className="text-red-400 text-sm">{errors.file}</p>
-                )}
               </div>
               <p className="text-sm text-muted-foreground mt-4 mb-2">
                 Once you are satisfied, click the upload button below.
               </p>
               <Button disabled={isPending}>
-                <UploadIcon />
-                Upload Book
+                <Pencil />
+                Update Book
               </Button>
             </div>
           </form>
@@ -316,4 +327,6 @@ export default function Page() {
       </div>
     </div>
   );
-}
+};
+
+export default UpdateForm;

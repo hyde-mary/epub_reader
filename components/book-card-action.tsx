@@ -73,11 +73,7 @@ export function BookCardAction({
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>
-          <Button
-            variant="ghost"
-            className="w-full justify-start p-0"
-            disabled={isLoading}
-          >
+          <Button variant="ghost" className="w-full justify-start p-0">
             <FilePen className="mr-2 h-4 w-4" /> Update
           </Button>
         </DropdownMenuItem>

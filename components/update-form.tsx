@@ -138,7 +138,7 @@ const UpdateForm = ({ book }: UpdateFormProps) => {
         {/* Upload and Title */}
         <div className="relative z-20 flex items-center">
           <Upload className="mr-5 w-7 h-7" />
-          <p className="text-xl font-extrabold underline">Upload Your Books</p>
+          <p className="text-xl font-extrabold underline">Update Your Book</p>
         </div>
 
         {/* Centered Image */}

@@ -68,6 +68,15 @@ const UpdateForm = ({ book }: UpdateFormProps) => {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleFormSubmit = async (previousState: any, formData: FormData) => {
+    if (
+      (formData.get("title") as string) == book.title &&
+      formData.get("author") == book.author &&
+      formData.get("image_url") == book.image_url
+    ) {
+      console.log("No changes, will not update!");
+      return redirect("/");
+    }
+
     try {
       const formValues = {
         title: formData.get("title") as string,

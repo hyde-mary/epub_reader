@@ -1,5 +1,5 @@
 "use client";
-import { Ellipsis, Trash } from "lucide-react";
+import { Ellipsis, FilePen, Trash } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { deleteBook } from "@/lib/actions";
+import { deleteBook } from "@/lib/delete-book";
 import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
@@ -25,6 +25,7 @@ import {
 } from "./ui/alert-dialog";
 import { useState } from "react";
 import { Separator } from "./ui/separator";
+import { redirect } from "next/navigation";
 
 export function BookCardAction({
   id,
@@ -72,6 +73,15 @@ export function BookCardAction({
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <DropdownMenuItem>
+          <Button
+            variant="ghost"
+            className="w-full justify-start p-0"
+            onClick={() => redirect(`/update/${id}`)}
+          >
+            <FilePen className="mr-2 h-4 w-4" /> Update
+          </Button>
+        </DropdownMenuItem>
         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
           <AlertDialog open={open} onOpenChange={setOpen}>
             <AlertDialogTrigger asChild>

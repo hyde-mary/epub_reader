@@ -10,22 +10,14 @@ interface Book {
   user: string;
   author: string;
   image_url: string;
-  file_id: string;
-  _createdAt: string;
-}
-
-interface File {
-  _id: string;
-  originalFilename: string;
-  url: string;
-  size: number;
-  extension: string;
+  file_path: string;
+  file_url: string;
   _createdAt: string;
 }
 
 interface BookReaderProps {
   book: Book;
-  file: File;
+  file_url: string;
   location: string | number;
   setLocation: (location: string | number) => void;
   fontSize: number;
@@ -33,12 +25,11 @@ interface BookReaderProps {
 
 const ContentReader = ({
   book,
-  file,
+  file_url,
   location,
   setLocation,
   fontSize,
 }: BookReaderProps) => {
-  const file_url = file.url;
   const title = book.title;
 
   const rendition = useRef<Rendition | undefined>(undefined);

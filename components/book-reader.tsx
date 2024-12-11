@@ -11,27 +11,18 @@ interface Book {
   user: string;
   author: string;
   image_url: string;
-  file_id: string;
-  _createdAt: string;
-}
-
-interface File {
-  _id: string;
-  originalFilename: string;
-  url: string;
-  size: number;
-  extension: string;
+  file_path: string;
+  file_url: string;
   _createdAt: string;
 }
 
 interface BookReaderProps {
   book: Book;
-  file: File;
 }
 
-const BookReader = ({ book, file }: BookReaderProps) => {
+const BookReader = ({ book }: BookReaderProps) => {
   const [fontSize, setFontSize] = useState<number>(18);
-  const file_url = file.url;
+  const { file_url } = book;
 
   const [location, setLocation] = useLocalStorageState<string | number>(
     "persist-location",
@@ -45,7 +36,7 @@ const BookReader = ({ book, file }: BookReaderProps) => {
       <section className="flex-grow-[8] bg-slate-100">
         <ContentReader
           book={book}
-          file={file}
+          file_url={file_url}
           location={location}
           setLocation={setLocation}
           fontSize={fontSize}

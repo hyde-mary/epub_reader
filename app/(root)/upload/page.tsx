@@ -22,10 +22,11 @@ import { useToast } from "@/hooks/use-toast";
 import { uploadBook } from "@/lib/upload-book";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { supabase } from "@/lib/supabase-client";
+import { nanoid } from "nanoid";
 
 export default function Page() {
   // we first need to validate whether the image is valid before rendering it
-
   const { data: session } = useSession();
   if (!session) {
     redirect("/");
@@ -33,6 +34,7 @@ export default function Page() {
 
   const [imageUrl, setImageUrl] = useState<string>("");
   const [isValidImage, setIsValidImage] = useState<boolean>(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [file, setFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const router = useRouter();
@@ -59,28 +61,16 @@ export default function Page() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleFormSubmit = async (previousState: any, formData: FormData) => {
-    try {
-      const formValues = {
-        title: formData.get("title") as string,
-        author: formData.get("author") as string,
-        image_url: formData.get("image_url") as string,
-        file: formData.get("file") as File,
-      };
+    const formValues = {
+      title: formData.get("title") as string,
+      author: formData.get("author") as string,
+      image_url: formData.get("image_url") as string,
+      file: formData.get("file") as File,
+    };
 
+    try {
       // pass it to bookFormSchema and check validation
       await createBookFormSchema.parseAsync(formValues);
-
-      const result = await uploadBook(previousState, formData, file);
-
-      if (result.status === "success") {
-        toast({
-          variant: "default",
-          title: "Book Upload Successfully!",
-          description:
-            "Your Book has been uploaded to the Database Successfully!",
-        });
-        router.push(`/book/${result._id}`);
-      }
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors = error.flatten().fieldErrors;
@@ -113,6 +103,59 @@ export default function Page() {
           status: "ERROR",
         };
       }
+    }
+
+    try {
+      const file = formValues.file;
+
+      if (!file) {
+        throw new Error("No file provided");
+      }
+
+      const fileExt = file?.name.split(".").pop();
+      const fileName = `${nanoid()}.${fileExt}`;
+      const userId = session.id;
+      const filePath = `${userId}/${fileName}`;
+
+      const { error } = await supabase.storage
+        .from("epub-files")
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      const publicUrl = supabase.storage
+        .from("epub-files")
+        .getPublicUrl(filePath).data.publicUrl;
+
+      const result = await uploadBook({
+        title: formValues.title,
+        author: formValues.author,
+        image_url: formValues.image_url,
+        file_path: filePath,
+        file_url: publicUrl,
+      });
+
+      if (result.status === "success") {
+        toast({
+          variant: "default",
+          title: "Book Upload Successfully!",
+          description:
+            "Your Book has been uploaded to the Database Successfully!",
+        });
+        router.push(`/book/${result._id}`);
+      }
+    } catch (error) {
+      console.log(error);
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem with your request.",
+      });
     }
   };
 

@@ -19,7 +19,8 @@ export const createBookFormSchema = z.object({
     .instanceof(File)
     .refine((file) => file.type === "application/epub+zip", {
       message: "Only EPUB files are allowed.",
-    }),
+    })
+    .refine((file) => file.size <= 50 * 1024 * 1024, "File must be under 50MB"),
 });
 
 export const updateBookFormSchema = z.object({

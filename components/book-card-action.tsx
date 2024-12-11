@@ -29,10 +29,10 @@ import { redirect } from "next/navigation";
 
 export function BookCardAction({
   id,
-  file_id,
+  file_path,
 }: {
   id: string;
-  file_id: string;
+  file_path: string;
 }) {
   const { toast } = useToast();
   const [open, setOpen] = useState<boolean>(false);
@@ -41,7 +41,7 @@ export function BookCardAction({
   const handleDelete = async () => {
     setIsLoading(true);
     try {
-      const result = await deleteBook(id, file_id);
+      const result = await deleteBook({ id, file_path });
       if (result.status === "success") {
         toast({
           variant: "default",

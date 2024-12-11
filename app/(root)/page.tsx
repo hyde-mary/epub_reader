@@ -13,7 +13,8 @@ interface Book {
   author: string;
   _createdAt: string;
   image_url: string;
-  file_id: string;
+  file_path: string;
+  file_url: string;
   file: File;
 }
 

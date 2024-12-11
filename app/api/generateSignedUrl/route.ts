@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { supabase } from "@/lib/supabase-service-role";
+import { supabase } from "@/lib/supabase-client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {

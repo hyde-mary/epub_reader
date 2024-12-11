@@ -4,20 +4,22 @@ import { auth } from "@/auth";
 import { writeClient } from "@/sanity/lib/write-client";
 import { parseServerActionResponse } from "./utils";
 
-// Helper to upload the file to sanity assets
-const uploadFileToSanity = async (file: File) => {
-  const fileAsset = await writeClient.assets.upload("file", file, {
-    filename: file.name,
-  });
-  return fileAsset;
-};
+interface uploadBookProps {
+  title: string;
+  author: string;
+  image_url: string;
+  file_path: string;
+  file_url: string;
+}
 
 // export uploadBook function
-export const uploadBook = async (
-  state: unknown,
-  form: FormData,
-  file: File | null
-) => {
+export const uploadBook = async ({
+  title,
+  author,
+  image_url,
+  file_path,
+  file_url,
+}: uploadBookProps) => {
   const session = await auth();
 
   if (!session)
@@ -26,17 +28,7 @@ export const uploadBook = async (
       status: "error",
     });
 
-  const { title, author, image_url } = Object.fromEntries(
-    Array.from(form).filter(([key]) => key !== "file")
-  );
-
   try {
-    let fileReference = null;
-    if (file) {
-      const fileAsset = await uploadFileToSanity(file);
-      fileReference = fileAsset._id;
-    }
-
     const book = {
       title,
       author,
@@ -45,10 +37,8 @@ export const uploadBook = async (
         _type: "reference",
         _ref: session?.id,
       },
-      file_id: fileReference as string,
-      file: fileReference
-        ? { _type: "file", asset: { _ref: fileReference } }
-        : null,
+      file_path,
+      file_url,
     };
 
     const result = await writeClient.create({ _type: "book", ...book });

@@ -19,17 +19,8 @@ export const BOOKS_BY_ID_QUERY = defineQuery(`
   user,
   author,
   image_url,
-  file_id,
-  _createdAt,
-}`);
-
-export const FILE_BY_ID_QUERY = defineQuery(`
-  *[_type == "sanity.fileAsset" && _id == $file_id][0]{
-  _id,
-  originalFilename,
-  url,
-  size,
-  extension,
+  file_path,
+  file_url,
   _createdAt,
 }`);
 

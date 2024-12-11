@@ -22,7 +22,6 @@ import { useToast } from "@/hooks/use-toast";
 import { uploadBook } from "@/lib/upload-book";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { supabase } from "@/lib/supabase-client";
 import { nanoid } from "nanoid";
 
 export default function Page() {
@@ -117,37 +116,55 @@ export default function Page() {
       const userId = session.id;
       const filePath = `${userId}/${fileName}`;
 
-      const { error } = await supabase.storage
-        .from("epub-files")
-        .upload(filePath, file, {
-          cacheControl: "3600",
-          upsert: false,
-        });
-
-      if (error) {
-        throw error;
-      }
-
-      const publicUrl = supabase.storage
-        .from("epub-files")
-        .getPublicUrl(filePath).data.publicUrl;
-
-      const result = await uploadBook({
-        title: formValues.title,
-        author: formValues.author,
-        image_url: formValues.image_url,
-        file_path: filePath,
-        file_url: publicUrl,
+      const response = await fetch("/api/generateSignedUrl", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileName: fileName,
+          fileType: fileExt,
+          filePath: filePath,
+        }),
       });
 
-      if (result.status === "success") {
-        toast({
-          variant: "default",
-          title: "Book Upload Successfully!",
-          description:
-            "Your Book has been uploaded to the Database Successfully!",
+      const { signedUrl, error } = await response.json();
+
+      if (error) {
+        console.error("Failed to get signed URL:", error);
+        return;
+      }
+
+      const uploadResponse = await fetch(signedUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+
+      if (uploadResponse.ok) {
+        console.log("File uploaded successfully");
+
+        const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/epub-files/${filePath}`;
+
+        console.log("Public URL:", publicUrl);
+
+        const result = await uploadBook({
+          title: formValues.title,
+          author: formValues.author,
+          image_url: formValues.image_url,
+          file_path: filePath,
+          file_url: publicUrl,
         });
-        router.push(`/book/${result._id}`);
+
+        if (result.status === "success") {
+          toast({
+            variant: "default",
+            title: "Book Upload Successfully!",
+            description:
+              "Your Book has been uploaded to the Database Successfully!",
+          });
+          router.push(`/book/${result._id}`);
+        }
+      } else {
+        throw new Error("File upload failed");
       }
     } catch (error) {
       console.log(error);

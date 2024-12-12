@@ -8,6 +8,8 @@ The project is not intended for production use, and any use of uploaded data is 
 
 **Epub Reader** is a web-based application project which allows users to upload & read ePub books on the browser.
 
+Deployed here: [epub reader](https://epub-reader-umber.vercel.app)
+
 ---
 
 ## 🚀 **Features**

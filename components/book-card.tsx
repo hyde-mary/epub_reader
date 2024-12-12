@@ -19,8 +19,6 @@ interface Book {
 export function BookCard({ book }: { book: Book }) {
   const { _id, author, _createdAt, title, image_url, file_path } = book;
 
-  console.log(file_path);
-
   return (
     <li className="py-6 px-5">
       <Card className="w-[350px] overflow-hidden">

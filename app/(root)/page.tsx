@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { BookCard } from "@/components/book-card";
 import Navbar from "@/components/nav-bar";
-import { sanityFetch, SanityLive } from "@/sanity/lib/live";
+import { sanityFetch } from "@/sanity/lib/live";
 import { USER_BOOKS_QUERY } from "@/sanity/lib/queries";
 import Image from "next/image";
 import { redirect } from "next/navigation";
@@ -82,7 +82,6 @@ export default async function Home() {
           </div>
         </section>
       )}
-      <SanityLive />
     </>
   );
 }

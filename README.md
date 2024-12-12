@@ -54,29 +54,29 @@ npm install
 
 ### 3. Create Personal Accounts
 
-To fully configure the project, you'll need accounts and setups for Sanity, GitHub Developer App, and Supabase Storage:
+To fully configure the project, you'll need accounts and setups for **Sanity, GitHub Developer App, and Supabase Storag**e:
 
-Sanity (CMS):
+**Sanity (CMS):**
 
-1. Create a Sanity account.
+1. Create a [Sanity](https://www.sanity.io/) account.
 2. Create a new project in the Sanity dashboard.
 3. Add the necessary schemas for managing user and book data (refer to the project documentation for schema details if provided).
 4. Note down your Sanity Project ID and Dataset.
 
-GitHub Developer App:
+**GitHub Developer App:**
 
-1. Go to your GitHub Developer Settings.
+1. Go to your [GitHub Developer Settings](https://github.com/settings/developers).
 2. Create a new OAuth application:
    - Homepage URL: `http://localhost:3000` (for local development)
    - Authorization callback URL: `http://localhost:3000/api/auth/callback/github`
+3. Note down your Client ID and Client Secret.
 
-Note down your Client ID and Client Secret.
+**Supabase (Storage):**
 
-1. Supabase (Storage):
-2. Create a Supabase account.
-3. Create a new project in the Supabase dashboard.
-4. Set up a Storage Bucket for storing ePub files.
-5. Generate a Service Role Key from your Supabase project settings.
+1. Create a [Supabase](https://supabase.com/) account.
+2. Create a new project in the Supabase dashboard.
+3. Set up a Storage Bucket for storing ePub files.
+4. Generate a Service Role Key from your Supabase project settings.
 
 ### 4. Setup Environment Variables
 

@@ -31,6 +31,7 @@ The project is not intended for production use, and any use of uploaded data is 
 ### Back End:
 
 - **Sanity CMS:** Content Management System for User and Book Data
+- **Supabase Buckets:** ePub Storage
 
 ---
 
@@ -51,7 +52,33 @@ cd epub-reader
 npm install
 ```
 
-### 3. Setup Environment Variables
+### 3. Create Personal Accounts
+
+To fully configure the project, you'll need accounts and setups for Sanity, GitHub Developer App, and Supabase Storage:
+
+Sanity (CMS):
+
+1. Create a Sanity account.
+2. Create a new project in the Sanity dashboard.
+3. Add the necessary schemas for managing user and book data (refer to the project documentation for schema details if provided).
+4. Note down your Sanity Project ID and Dataset.
+
+GitHub Developer App:
+
+1. Go to your GitHub Developer Settings.
+2. Create a new OAuth application:
+   - Homepage URL: `http://localhost:3000` (for local development)
+   - Authorization callback URL: `http://localhost:3000/api/auth/callback/github`
+
+Note down your Client ID and Client Secret.
+
+1. Supabase (Storage):
+2. Create a Supabase account.
+3. Create a new project in the Supabase dashboard.
+4. Set up a Storage Bucket for storing ePub files.
+5. Generate a Service Role Key from your Supabase project settings.
+
+### 4. Setup Environment Variables
 
 Create a .env.local file at the root of your project and add the following:
 
@@ -62,11 +89,12 @@ AUTH_SECRET=your_auth_secret
 AUTH_GITHUB_ID=your_auth_github_id
 AUTH_GITHUB_SECRET=your_auth_github_secret
 SANITY_WRITE_TOKEN=your_sanity_write_token
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_role_key
 ```
 
-Replace `your_next_public_sanity_project_id`, `your_next_public_sanity_dataset`, `your_auth_secret`, `your_auth_github_id`, `your_auth_github_secret`, `your_sanity_write_token` with your actual credentials.
+Replace `your_next_public_sanity_project_id`, `your_next_public_sanity_dataset`, `your_auth_secret`, `your_auth_github_id`, `your_auth_github_secret`, `your_supabase_role_key`, `your_sanity_write_token` with your actual credentials.
 
-### 4. Run the Development Server
+### 5. Run the Development Server
 
 ```bash
 npm run dev

@@ -1,28 +1,74 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Book,
-  BookUser,
-  File,
-  ImageIcon,
-  Upload,
-  UploadIcon,
-} from "lucide-react";
-import Image from "next/image";
+import { File, Upload } from "lucide-react";
 import { redirect } from "next/navigation";
-import { Separator } from "@/components/ui/separator";
 import { createBookFormSchema } from "@/lib/validation";
 import { z } from "zod";
-import { useToast } from "@/hooks/use-toast";
 import { uploadBook } from "@/lib/upload-book";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { nanoid } from "nanoid";
+import ImagePreview from "@/components/image-preview";
+import UploadForm from "@/components/upload-form";
+import { useToast } from "@/hooks/use-toast";
+import UploadFormFooter from "@/components/upload-form-footer";
+
+interface FormValues {
+  title: string;
+  author: string;
+  image_url: string;
+}
+
+const getSignedUrl = async (
+  fileName: string,
+  fileType: string | undefined,
+  filePath: string
+) => {
+  const response = await fetch("/api/generateSignedUrl", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ fileName, fileType, filePath }),
+  });
+
+  const { signedUrl, error } = await response.json();
+
+  if (error) {
+    throw new Error(`Failed to generate signed URL: ${error}`);
+  }
+
+  return signedUrl;
+};
+
+const uploadFileToSignedUrl = async (signedUrl: string, file: File) => {
+  const response = await fetch(signedUrl, {
+    method: "PUT",
+    headers: { "Content-Type": file.type },
+    body: file,
+  });
+
+  if (!response.ok) {
+    throw new Error("File upload to signed URL failed");
+  }
+};
+
+const generatePublicUrl = (filePath: string) => {
+  return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/epub-files/${filePath}`;
+};
+
+const saveBookDetails = async (
+  formValues: FormValues,
+  filePath: string,
+  publicUrl: string
+) => {
+  return uploadBook({
+    title: formValues.title,
+    author: formValues.author,
+    image_url: formValues.image_url,
+    file_path: filePath,
+    file_url: publicUrl,
+  });
+};
 
 export default function Page() {
   // we first need to validate whether the image is valid before rendering it
@@ -68,7 +114,6 @@ export default function Page() {
     };
 
     try {
-      // pass it to bookFormSchema and check validation
       await createBookFormSchema.parseAsync(formValues);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -80,9 +125,7 @@ export default function Page() {
         toast({
           variant: "destructive",
           title: "Input Error!",
-          description:
-            errorMessages ||
-            "There was a problem with your input. Please try again!",
+          description: errorMessages,
         });
 
         return {
@@ -93,9 +136,11 @@ export default function Page() {
       } else {
         toast({
           variant: "destructive",
-          title: "Uh oh! Something went wrong.",
-          description: "There was a problem with your request.",
+          title: "An Error Occurred!",
+          description:
+            "Something Unexpected Occurred while Parsing your Inputs! Please try Again!",
         });
+
         return {
           ...previousState,
           error: "An unexpected error has occurred",
@@ -116,62 +161,27 @@ export default function Page() {
       const userId = session.id;
       const filePath = `${userId}/${fileName}`;
 
-      const response = await fetch("/api/generateSignedUrl", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fileName: fileName,
-          fileType: fileExt,
-          filePath: filePath,
-        }),
-      });
+      const signedUrl = await getSignedUrl(fileName, fileExt, filePath);
+      await uploadFileToSignedUrl(signedUrl, file);
 
-      const { signedUrl, error } = await response.json();
+      const publicUrl = generatePublicUrl(filePath);
+      const result = await saveBookDetails(formValues, filePath, publicUrl);
 
-      if (error) {
-        console.error("Failed to get signed URL:", error);
-        return;
-      }
-
-      const uploadResponse = await fetch(signedUrl, {
-        method: "PUT",
-        headers: { "Content-Type": file.type },
-        body: file,
-      });
-
-      if (uploadResponse.ok) {
-        console.log("File uploaded successfully");
-
-        const publicUrl = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/epub-files/${filePath}`;
-
-        console.log("Public URL:", publicUrl);
-
-        const result = await uploadBook({
-          title: formValues.title,
-          author: formValues.author,
-          image_url: formValues.image_url,
-          file_path: filePath,
-          file_url: publicUrl,
+      if (result.status === "success") {
+        toast({
+          variant: "default",
+          title: "Book Uploaded Successfully!",
+          description: "Your book has been uploaded to the database.",
         });
 
-        if (result.status === "success") {
-          toast({
-            variant: "default",
-            title: "Book Upload Successfully!",
-            description:
-              "Your Book has been uploaded to the Database Successfully!",
-          });
-          router.push(`/book/${result._id}`);
-        }
-      } else {
-        throw new Error("File upload failed");
+        router.push(`/book/${result._id}`);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       toast({
         variant: "destructive",
-        title: "Uh oh! Something went wrong.",
-        description: "There was a problem with your request.",
+        title: "An Error Occurred!",
+        description: "Something Unexpected Occurred! Please try Again!",
       });
     }
   };
@@ -195,25 +205,7 @@ export default function Page() {
         </div>
 
         {/* Centered Image */}
-        <div className="flex flex-col items-center justify-center h-full space-y-4 z-20">
-          {isValidImage ? (
-            <Image
-              src={`${imageUrl}`}
-              alt="Book Cover"
-              width={400}
-              height={600}
-              className="rounded-lg object-contain border-8 border-white"
-            />
-          ) : (
-            <Image
-              src="https://cdn.dribbble.com/users/1637204/screenshots/5912295/attachments/1271645/moby-dick-book-cover-illustration-attachment.png"
-              alt="Book Cover"
-              width={400}
-              height={600}
-              className="rounded-lg object-contain"
-            />
-          )}
-        </div>
+        <ImagePreview imageUrl={imageUrl} isValidImage={isValidImage} />
 
         {/* Description Text */}
         <div className="relative z-20 mt-auto">
@@ -233,145 +225,14 @@ export default function Page() {
       {/* RIGHT SIDE */}
       <div className="lg:p-8 w-full flex items-center justify-center min-h-screen">
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[450px]">
-          <form action={formSubmit}>
-            <h1 className="text-4xl font-extrabold tracking-tight mb-4 underline">
-              Upload your Book
-            </h1>
-            <p className="text-sm text-muted-foreground mb-4">
-              Enter the necessary information such as the Title and Author of
-              the book. <br />
-            </p>
-            <div className="grid gap-2">
-              <div className="grid gap-1 mb-2">
-                <Label
-                  htmlFor="title"
-                  className="font-bold text-md flex items-center space-x-3"
-                >
-                  <Book className="w-4 h-4 mr-2" />
-                  Title:
-                </Label>
-                <Input
-                  id="title"
-                  name="title"
-                  placeholder="Title of the Book (e.g. Moby Dick)"
-                  type="text"
-                  className="mt-2"
-                />
-                {errors.title && (
-                  <p className="text-red-400 text-sm">{errors.title}</p>
-                )}
-              </div>
-              <div className="grid gap-1 mb-2">
-                <Label
-                  htmlFor="author"
-                  className="font-bold text-md flex items-center space-x-3"
-                >
-                  <BookUser className="w-4 h-4 mr-2" />
-                  Author:
-                </Label>
-                <Input
-                  id="author"
-                  name="author"
-                  placeholder="Author of the Book (e.g. Herman Melville)"
-                  type="text"
-                  className="mt-2"
-                />
-                {errors.author && (
-                  <p className="text-red-400 text-sm">{errors.author}</p>
-                )}
-              </div>
-              <Separator />
-              <p className="text-sm text-muted-foreground">
-                Furthermore, you are to provide an image URL cover for your
-                book. This will appear in your homepage
-              </p>
-              <div className="grid gap-1 mt-2">
-                <Label
-                  htmlFor="image_url"
-                  className="font-bold text-md flex items-center space-x-3"
-                >
-                  <ImageIcon className="w-4 h-4 mr-2" />
-                  Cover Image URL:
-                </Label>
-                <Input
-                  id="image_url"
-                  name="image_url"
-                  placeholder="https://images.booksense.com/images/007/839/9781954839007.jpg"
-                  type="text"
-                  className="mt-2"
-                  onChange={handleImageUrlChange}
-                />
-                {errors.image_url && (
-                  <p className="text-red-400 text-sm">{errors.image_url}</p>
-                )}
-              </div>
-              <Separator className="mt-2 mb-2" />
-              <p className="text-sm text-muted-foreground mb-2">
-                Finally, upload your ePub below:
-              </p>
-              <div className="grid gap-1">
-                <Label
-                  htmlFor="file"
-                  className="font-bold text-md flex items-center space-x-3"
-                >
-                  <File className="w-4 h-4 mr-2" />
-                  ePub:
-                </Label>
-                <Input
-                  id="file"
-                  name="file"
-                  type="file"
-                  className="mt-2 p-2"
-                  onChange={handleFileChange}
-                />
-                {errors.file && (
-                  <p className="text-red-400 text-sm">{errors.file}</p>
-                )}
-              </div>
-              <p className="text-sm text-muted-foreground mt-4 mb-2">
-                Once you are satisfied, click the upload button below.
-              </p>
-              <Button disabled={isPending}>
-                <UploadIcon />
-                Upload Book
-              </Button>
-            </div>
-          </form>
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                Or Cancel with
-              </span>
-            </div>
-          </div>
-          <Button
-            variant="outline"
-            type="button"
-            onClick={() => redirect("/")}
-            disabled={isPending}
-          >
-            Cancel
-          </Button>
-          <p className="px-8 text-center text-sm text-muted-foreground">
-            By clicking upload, you agree to our{" "}
-            <Link
-              href="/terms"
-              className="underline underline-offset-4 hover:text-primary"
-            >
-              Terms of Service
-            </Link>{" "}
-            and{" "}
-            <Link
-              href="/privacy"
-              className="underline underline-offset-4 hover:text-primary"
-            >
-              Privacy Policy
-            </Link>
-            .
-          </p>
+          <UploadForm
+            formSubmit={formSubmit}
+            handleImageUrlChange={handleImageUrlChange}
+            handleFileChange={handleFileChange}
+            errors={errors}
+            isPending={isPending}
+          />
+          <UploadFormFooter isPending={isPending} />
         </div>
       </div>
     </div>

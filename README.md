@@ -62,7 +62,7 @@ To fully configure the project, you'll need accounts and setups for **Sanity, Gi
 
 1. Create a [Sanity](https://www.sanity.io/) account.
 2. Create a new project in the Sanity dashboard.
-3. Add the necessary schemas for managing user and book data (refer to the project documentation for schema details if provided).
+3. Add the necessary schemas for managing user and book data (refer to the project for schema details).
 4. Note down your Sanity Project ID and Dataset.
 
 **GitHub Developer App:**

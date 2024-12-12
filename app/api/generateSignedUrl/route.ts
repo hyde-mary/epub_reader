@@ -36,7 +36,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       signedUrl: data.signedUrl,
-      token: data.token,
     });
   } catch (err) {
     console.error("Server Error:", err);
